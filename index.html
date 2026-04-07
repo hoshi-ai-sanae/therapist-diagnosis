@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>セラピスト業務の課題解決 | AIさなちゃん</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8dcc8 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* ===== ヘッダー ===== */
+        .header {
+            background: linear-gradient(135deg, #8b6f47 0%, #c4a574 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ===== メインコンテンツ ===== */
+        .main-content {
+            padding: 40px 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        /* ===== ビデオセクション ===== */
+        .video-section {
+            background: #f9f7f4;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e8dcc8;
+            margin-bottom: 30px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+            margin-bottom: 20px;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== 課題選択セクション ===== */
+        .challenge-selection {
+            margin-bottom: 40px;
+        }
+
+        .challenge-selection h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .challenge-selection > p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 600px) {
+            .challenge-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .challenge-btn {
+            padding: 18px;
+            background: white;
+            border: 2px solid #e8dcc8;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .challenge-btn:hover {
+            border-color: #8b6f47;
+            background: #f9f7f4;
+            transform: translateY(-2px);
+        }
+
+        .challenge-btn.selected {
+            background: #8b6f47;
+            border-color: #8b6f47;
+            color: white;
+            box-shadow: 0 5px 15px rgba(139, 111, 71, 0.2);
+        }
+
+        .challenge-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            display: inline-block;
+        }
+
+        /* ===== 解決策セクション ===== */
+        .solution-detail {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .solution-detail.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .solution-header {
+            background: linear-gradient(135deg, #8b6f47 0%, #c4a574 100%);
+            color: white;
+            padding: 28px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .solution-header h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .solution-header p {
+            font-size: 14px;
+            opacity: 0.95;
+            line-height: 1.7;
+        }
+
+        /* ===== アドバイスセクション ===== */
+        .advice-section {
+            background: #f9f7f4;
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid #c4a574;
+        }
+
+        .advice-section h3 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .advice-list {
+            list-style: none;
+        }
+
+        .advice-list li {
+            padding: 14px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #555;
+            border-bottom: 1px solid #e8dcc8;
+        }
+
+        .advice-list li:last-child {
+            border-bottom: none;
+        }
+
+        .advice-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #8b6f47;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ===== ツール提案セクション ===== */
+        .tool-section {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            border: 2px solid #e8dcc8;
+            margin-bottom: 30px;
+        }
+
+        .tool-section h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .tool-description {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .tool-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* ===== アプリ詳細表示ボタン ===== */
+        .btn-app-show {
+            padding: 12px 28px;
+            background: white;
+            border: 2px solid #8b6f47;
+            color: #8b6f47;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-app-show:hover {
+            background: #8b6f47;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-app-show.active {
+            background: #8b6f47;
+            color: white;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            background: #e8dcc8;
+            color: #333;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ===== アプリリスト ===== */
+        .app-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        @media (min-width: 600px) {
+            .app-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .app-item {
+            padding: 12px 16px;
+            background: #f9f7f4;
+            border-left: 3px solid #c4a574;
+            border-radius: 6px;
+        }
+
+        .app-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* ===== サポート提案セクション ===== */
+        .support-section {
+            background: linear-gradient(135deg, #fff5f0 0%, #f5f0e8 100%);
+            padding: 35px;
+            border-radius: 15px;
+            border-left: 5px solid #c4a574;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .support-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .support-section p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .support-section p.note {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .line-button {
+            display: inline-block;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #8b6f47 0%, #c4a574 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .line-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(139, 111, 71, 0.3);
+        }
+
+        /* ===== フッター ===== */
+        .footer {
+            background: #f9f7f4;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e8dcc8;
+        }
+
+        /* ===== モバイル対応 ===== */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .main-content {
+                padding: 25px 20px;
+            }
+
+            .challenge-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .solution-header h2 {
+                font-size: 18px;
+            }
+
+            .advice-section,
+            .tool-section,
+            .support-section {
+                padding: 20px;
+            }
+
+            .line-button {
+                display: block;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== ヘッダー ===== -->
+        <div class="header">
+            <h1>✨ セラピストの業務課題を一緒に解決</h1>
+            <p>本業に集中するためのアドバイスとサポート</p>
+        </div>
+
+        <!-- ===== メインコンテンツ ===== -->
+        <div class="main-content">
+            <!-- 動画セクション -->
+            <div class="video-section" id="videoSection">
+                <h2 style="font-size: 20px; margin-bottom: 20px; color: #333;">AIさなちゃんからのメッセージ</h2>
+                <div class="video-container">
+                    <video controls>
+                        <source src="sanachan-diagnosis-video.mp4" type="video/mp4">
+                        お使いのブラウザは動画タグに対応していません
+                    </video>
+                </div>
+            </div>
+
+            <!-- 課題選択セクション -->
+            <div class="challenge-selection" id="challengeSelection">
+                <h2>あなたが困っていることはどれですか？</h2>
+                <p>
+                    該当するものを選んでください。それぞれの課題に合わせた具体的なアドバイスと、<br>
+                    必要ならアプリのご提案をいたします。
+                </p>
+                <div class="challenge-grid" id="challengeGrid"></div>
+            </div>
+
+            <!-- 解決策詳細 -->
+            <div id="solutionsContainer"></div>
+        </div>
+
+        <!-- ===== フッター ===== -->
+        <div class="footer">
+            <p>🌟 AIさなちゃんが、あなたの業務課題をサポートします</p>
+            <p style="margin-top: 8px;">Made with ❤️ by 佐奈重</p>
+        </div>
+    </div>
+
+    <!-- ===== ロジック ===== -->
+    <script>
+        // ===== 課題と解決策のデータ =====
+        const solutions = {
+            'email': {
+                icon: '📧',
+                title: 'メール対応に時間を取られている',
+                problem: 'クライアントからの問い合わせ返信でセッション時間が減っている',
+                advice: {
+                    title: '今からできるアドバイス',
+                    items: [
+                        'メール返信の「テンプレート化」を今日から始めましょう。よくある問い合わせパターンを3～5個リストアップして、返信テンプレートを作成します。これだけで返信時間が50～70%削減できます。',
+                        'メール確認の時間を「1日2～3回の決まった時間」に限定することです。常にメールをチェックするのではなく、朝・昼・夕方と決めることで、集中力の断片化を防げます。',
+                        'クライアントに「返信は営業日の24時間以内」と明記することで、対応の緊急度を下げることができます。',
+                        'LINE公式や予約システムの自動返信機能を活用して、よくある質問に自動で答える体制を整えましょう。'
+                    ]
+                },
+                tool: {
+                    show: true,
+                    title: 'さらに効率化するなら',
+                    description: 'もし本格的に自動化したいなら、以下のようなアプリがあります：',
+                    apps: [
+                        'Claude Cowork',
+                        'Gmail（自動フィルタ機能）',
+                        'Zapier',
+                        'Make（オートメーション）'
+                    ]
+                }
+            },
+            'client': {
+                icon: '📋',
+                title: 'クライアント情報の管理が煩雑',
+                problem: 'カルテ作成や情報整理に手間がかかり、セッションの質が落ちている',
+                advice: {
+                    title: '今からできるアドバイス',
+                    items: [
+                        '簡単な「クライアント情報シート」をGoogle Docsで作成し、リアルタイムで更新する癖をつけましょう。セッション直後に5分だけ記入することで、後からの整理が不要になります。',
+                        '情報を「初回カルテ」「毎回のセッションノート」「進捗記録」の3つに分けて管理することで、必要な情報を素早く引き出せます。',
+                        '紙のカルテを使っている場合は、Google Driveで画像をスキャン→保管することで、いつでも参照できるようにしましょう。',
+                        'クライアントの前回のセッション内容を、セッション開始5分前に軽く目を通す習慣をつけることで、クライアントの満足度が大幅に上がります。'
+                    ]
+                },
+                tool: {
+                    show: true,
+                    title: 'さらに管理を楽にするなら',
+                    description: 'クライアント情報管理を効率化するアプリもあります：',
+                    apps: [
+                        'Notion',
+                        'Airtable',
+                        'Google Sheets（テンプレート）',
+                        'HubSpot（CRM）'
+                    ]
+                }
+            },
+            'schedule': {
+                icon: '📅',
+                title: 'スケジュール管理が複雑',
+                problem: '予約調整やキャンセル対応に時間がかかり、本業に集中できない',
+                advice: {
+                    title: '今からできるアドバイス',
+                    items: [
+                        'Google CalendarやLINEの予約機能を連携させて、「クライアントが自分で予約できる」環境を作りましょう。これだけで予約調整メールの80%が削減できます。',
+                        '予約確定のLINE自動返信に「キャンセルは48時間前までに」と明記することで、無断キャンセルを減らせます。',
+                        'キャンセル待ちを「自動リスト化」して、空きが出たら候補者に一括連絡する仕組みを作りましょう。',
+                        'セッション時間は「固定枠」（例：10:00～、14:00～）に限定することで、スケジュール調整の負担が大幅に減ります。'
+                    ]
+                },
+                tool: {
+                    show: true,
+                    title: '予約を完全自動化するなら',
+                    description: 'スケジュール管理を自動化するアプリがあります：',
+                    apps: [
+                        'Google Calendar',
+                        'Calendly',
+                        'Acuity Scheduling',
+                        'Square Appointments'
+                    ]
+                }
+            },
+            'content': {
+                icon: '✍️',
+                title: 'SNS投稿やブログが後回し',
+                problem: '本当は発信したいけど、時間がなくて放置されている',
+                advice: {
+                    title: '今からできるアドバイス',
+                    items: [
+                        'セッション終了後に「今日の気づき」を1～2句、スマートフォンにメモする習慣をつけましょう。この時間は3～5分です。これを週に3～4回すれば、月12～16本のネタが生まれます。',
+                        'Instagram、Facebook、ブログは「同じ内容を使い回す」ようにしましょう。同じ記事を別の切り口で投稿すれば、製作時間は1/3以下で済みます。',
+                        '「セラピストあるある」「クライアントからよく聞く悩み」などのテーマを決めて、4～6本まとめてドラフトを作成しておきましょう。「ネタ切れ」の時間的ロスが減ります。',
+                        '投稿は「毎週〇曜日〇時」と決めることで、投稿することが習慣化し、ルーチン化します。'
+                    ]
+                },
+                tool: {
+                    show: true,
+                    title: 'コンテンツ作成を加速するなら',
+                    description: 'コンテンツ作成を自動化・加速するアプリがあります：',
+                    apps: [
+                        'Canva',
+                        'ChatGPT',
+                        'Claude',
+                        'Buffer（投稿スケジュール）'
+                    ]
+                }
+            },
+            'billing': {
+                icon: '💰',
+                title: '請求書・領収書作成が面倒',
+                problem: '毎月の事務作業で時間を失い、疲れが溜まっている',
+                advice: {
+                    title: '今からできるアドバイス',
+                    items: [
+                        'Google SheetsまたはExcelで「請求書テンプレート」を1つ作成し、クライアント名と金額を入力するだけで自動計算されるようにしましょう。この準備に30分かかれば、毎月15～20分の時間が浮きます。',
+                        '請求日を「毎月〇日」に固定することで、「いつ請求するか」という判断の手間をなくします。',
+                        'LINE PayやPayPayなどの決済機能を使うことで、銀行振込の手間を減らせます。',
+                        '領収書の発行が必要な場合のみ、紙印刷するなど、「完全デジタル化できない項目」は最小限にしましょう。'
+                    ]
+                },
+                tool: {
+                    show: true,
+                    title: '請求業務を完全自動化するなら',
+                    description: '請求書・領収書管理を自動化するアプリがあります：',
+                    apps: [
+                        'Square Invoices',
+                        'Freee（会計ソフト）',
+                        'MisocaWorks',
+                        'Google Sheets（テンプレート）'
+                    ]
+                }
+            },
+            'workflow': {
+                icon: '⚙️',
+                title: '日々の業務フローが非効率',
+                problem: '繰り返し業務が多く、やることリストが消えない',
+                advice: {
+                    title: '今からできるアドバイス',
+                    items: [
+                        '「毎日やることリスト」「毎週やることリスト」「毎月やることリスト」を分けて、Google TasksやNotionで管理しましょう。これだけで頭の中の「やることリスト」が整理されて、ストレスが減ります。',
+                        '同じ作業を2回以上繰り返すことになったら、それは「自動化の候補」です。その都度、「Excelマクロで自動化できるか」「テンプレート化できるか」を考えましょう。',
+                        'セッション前後の「儀式化」できる作業（照明、音楽、キャンドル点灯など）をリストアップして、自動で実行される仕組みを作りましょう。',
+                        '1週間に1回、15分だけ「今週の業務フローを改善できなかったか」を振り返る習慣をつけることで、自然と効率化が進みます。'
+                    ]
+                },
+                tool: {
+                    show: true,
+                    title: '業務を完全自動化するなら',
+                    description: '複数のツールを連携させて業務を自動化するアプリがあります：',
+                    apps: [
+                        'Zapier',
+                        'Make（旧Integromat）',
+                        'IFTTT',
+                        'Notion（自動化機能）'
+                    ]
+                }
+            }
+        };
+
+        // 初期化
+        function initApp() {
+            renderChallengeButtons();
+        }
+
+        // 課題ボタンを描画
+        function renderChallengeButtons() {
+            const grid = document.getElementById('challengeGrid');
+            grid.innerHTML = '';
+
+            Object.entries(solutions).forEach(([key, data]) => {
+                const btn = document.createElement('button');
+                btn.className = 'challenge-btn';
+                btn.innerHTML = `<span class="challenge-icon">${data.icon}</span><span>${data.title}</span>`;
+                btn.onclick = () => selectChallenge(key, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        // 課題を選択して解決策を表示
+        function selectChallenge(key, element) {
+            // ボタンのアクティブ状態を変更
+            document.querySelectorAll('.challenge-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            // 解決策を表示
+            showSolution(key);
+            
+            // スクロール
+            setTimeout(() => {
+                const target = document.getElementById('solutionDetail-' + key);
+                if (target) {
+                    target.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }, 100);
+        }
+
+        // トグル関数
+        function toggleToolSection(key) {
+            const toolSection = document.getElementById('toolSection-' + key);
+            const button = event.target;
+            
+            if (toolSection.style.display === 'none') {
+                toolSection.style.display = 'block';
+                button.classList.add('active');
+                button.textContent = '△ アプリを隠す';
+                toolSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                toolSection.style.display = 'none';
+                button.classList.remove('active');
+                button.textContent = '💡 そのためのおすすめのアプリを見る';
+            }
+        }
+
+        // 解決策を表示
+        function showSolution(key) {
+            const data = solutions[key];
+            const container = document.getElementById('solutionsContainer');
+            
+            // 既存の解決策を非表示
+            document.querySelectorAll('.solution-detail').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // 該当する解決策があるか確認
+            let solutionDetail = document.getElementById('solutionDetail-' + key);
+            
+            if (!solutionDetail) {
+                solutionDetail = document.createElement('div');
+                solutionDetail.id = 'solutionDetail-' + key;
+                solutionDetail.className = 'solution-detail';
+                
+                let html = `
+                    <div class="solution-header">
+                        <h2>${data.icon} ${data.title}</h2>
+                        <p>${data.problem}</p>
+                    </div>
+
+                    <div class="advice-section">
+                        <h3>${data.advice.title}</h3>
+                        <ul class="advice-list">
+                            ${data.advice.items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                        <button onclick="toggleToolSection('${key}')" class="btn-app-show">
+                            💡 そのためのおすすめのアプリを見る
+                        </button>
+                    </div>
+                `;
+
+                if (data.tool.show) {
+                    html += `
+                        <div class="tool-section" id="toolSection-${key}" style="display: none;">
+                            <h3>🎯 こんなアプリがあります</h3>
+                            <p class="tool-description">${data.tool.description}</p>
+                            <div class="app-list">
+                                ${data.tool.apps.map(app => `
+                                    <div class="app-item">
+                                        <span class="app-name">${app}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="support-section">
+                        <h3>💬 サポートが必要な場合</h3>
+                        <p>
+                            これらのアドバイスを実装する際に、サポートが必要でしたら、<br>
+                            <strong>AIさなちゃんがお手伝いします。</strong>
+                        </p>
+                        <p class="note">
+                            アプリの導入設定、テンプレート作成、自動化の仕組みづくりなど、<br>
+                            あなたのペースに合わせてサポート可能です。
+                        </p>
+                        <a href="https://lin.ee/Yba7caW" target="_blank" class="line-button">
+                            📱 LINE公式で相談する
+                        </a>
+                    </div>
+                `;
+
+                solutionDetail.innerHTML = html;
+                container.appendChild(solutionDetail);
+            }
+
+            solutionDetail.classList.add('active');
+        }
+
+        // DOMContentLoaded後に初期化
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
